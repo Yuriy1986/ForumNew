@@ -25,6 +25,27 @@ namespace ForumNew.WEB
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            // For textarea.
+            bundles.Add(new ScriptBundle("~/bundles/autosize").Include(
+            "~/Scripts/autosize.js"
+            ));
+
+            //bundles.Add(new ScriptBundle("~/bundles/unobtrusive-ajax").Include(
+            //"~/Scripts/jquery.unobtrusive-ajax.min.js"
+            //));
+
+            // Dialog.
+            bundles.Add(new ScriptBundle("~/bundles/jquery-ui").Include(
+            "~/Scripts/jquery-ui.js"
+            ));
+            bundles.Add(new StyleBundle("~/Content/jquicss").Include(
+          "~/Content/jquery-ui.css",
+          "~/Content/jquery-ui.theme.css"));
+
+            //// PagedList.
+            //bundles.Add(new StyleBundle("~/Content/PagedList").Include(
+            //"~/Content/PagedList.css"));
         }
     }
 }
