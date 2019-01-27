@@ -9,10 +9,9 @@ namespace ForumNew.WEB.Models
 {
     public class CreateThemeViewModel
     {
-        [Required(ErrorMessage = "Необходимо указать название темы")]
+        [Required(ErrorMessage = "Message text is required.")]
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Наименование темы")]
-        [MaxLength(255, ErrorMessage = "Тема должна быть не более 255 символов")]
+        [Display(Name = "Your message:")]
         public string ThemeText { get; set; }
 
         [ScaffoldColumn(false)]

@@ -8,9 +8,9 @@ namespace ForumNew.DAL.Interfaces
     {
         Theme MessageHeader(int id);
 
-        IEnumerable<Message> GetAllMessages(int id);
+        IEnumerable<Message> GetAllMessages(int id, ref int pageNumber, int pageSize, out int totalPages);
 
-        void CreateMessage(Message message);
+        bool CreateMessage(Message message);
 
         bool DeleteMessage(Message message);
 

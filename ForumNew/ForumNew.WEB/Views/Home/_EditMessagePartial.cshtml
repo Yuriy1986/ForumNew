@@ -1,0 +1,63 @@
+﻿@model ForumNew.WEB.Models.EditMessageViewModel
+@Html.HiddenFor(Model => Model.MessageText, new
+{
+    @id = "messageOriginal"
+})
+@Html.TextAreaFor(Model => Model.MessageText, new
+{
+    @class = "form-control",
+    @placeholder = "enter your message",
+    @id = "messageText"
+})
+<hr />
+<p>
+    @Html.ValidationMessage("Message", new { @class = "text-danger", @id = "validation" })
+</p>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "AntiForgeryForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+<div class="text-center">
+    <button type="button" class="btn btn-warning" onclick="Submit(@Model.IdTheme, @Model.InternalId)">OK</button>
+    <button type="button" class="btn btn-basic" onclick="$('.dialog').dialog('close');">Cancel</button>
+</div>
+
+
+<script type="text/javascript">
+    $(".dialog").dialog("option", "width", window.innerWidth);
+    $(".dialog").dialog("option", "maxHeight", window.innerHeight);
+    autosize($("textarea"));
+
+    $('#messageText').on('input', function (event) {
+        $("#validation").text("");
+    });
+
+    function Submit(IdTheme, InternalId) {
+        if ($("#messageText").val().trim() === "") {
+            $("#validation").text("Message text is required.");
+            return;
+        }
+
+        if ($("#messageText").val().trim() === $("#messageOriginal").val()) {
+            $("#validation").text("Editable message is the same as the original.");
+            return;
+        }
+
+        var form = $('#AntiForgeryForm');
+        var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+        $.post("/Home/EditMessageConfirm",
+            {
+                __RequestVerificationToken: token,
+                IdTheme: IdTheme,
+                InternalId: InternalId,
+                MessageText: $("#messageText").val().trim()
+            },
+            function (response) {
+                if (response === "True")
+                    $('.dialog').dialog('close');
+                else
+                    $("#validation").text(response);
+            });
+    }
+</script>

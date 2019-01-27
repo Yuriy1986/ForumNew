@@ -10,9 +10,9 @@ namespace ForumNew.BLL.Interfaces
     {
         DTOMessageHeader MessageHeader(int id);
 
-        IEnumerable<DTOMessageViewModel> GetAllMessages(int id);
+        IEnumerable<DTOMessageViewModel> GetAllMessages(int id, ref int pageNumber,int pageSize, out int totalPages);
 
-        void CreateMessage(DTOCreateMessageViewModel dtoCreateMessageViewModel);
+        bool CreateMessage(DTOCreateMessageViewModel dtoCreateMessageViewModel);
 
         bool DeleteMessage(DTODeleteMessageViewModel dtoDeleteMessageViewModel);
 

@@ -9,9 +9,9 @@ namespace ForumNew.WEB.Models
 {
     public class ForgotPasswordViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Email is required.")]
         [EmailAddress]
-        [Display(Name = "Почта")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
     }
 }

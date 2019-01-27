@@ -1,0 +1,214 @@
+﻿@model IEnumerable<ForumNew.WEB.Models.MessageViewModel>
+@using Microsoft.AspNet.Identity
+
+<div id="messageContainer">
+    @if (Model.Count() == 0)
+    {
+        <h3>No messages in this theme</h3>
+    }
+    @foreach (var item in Model)
+    {
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-2 col-xs-3">
+                        @item.MessageTime.ToShortDateString()
+                        @item.MessageTime.ToShortTimeString()
+                    </div>
+                    <div class="col-md-9 col-xs-6">
+                        @Html.DisplayFor(modelitem => item.StatusMessage)
+                    </div>
+                    <div class="col-md-1 col-xs-3" style="background-color:darkgrey">
+                        # @item.InternalId
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td class="col-md-2 col-xs-3" style="background-color:beige; height:100%;">
+                                @item.NickName
+                                @if (item.Online)
+                                {
+                                    <div class="label label-success">online</div>
+                                }
+                                else
+                                {
+                                    <div class="label label-danger">offline</div>
+                                }
+                            </td>
+                            <td class="col-md-9 col-xs-8">
+                                @Html.TextAreaFor(modelitem => item.MessageText, new
+                           {
+                               @id = "themetext",
+                               @readonly = "readonly"
+                           })
+                            </td>
+                            <td class="col-md-1 col-xs-1" style="background-color:beige; height:100%;">
+                                @if (User.Identity.GetUserId() == item.UserId && item.StatusMessageId != 3 && item.StatusMessageId != 4)
+                                {
+                                    @Html.ActionLink(" ", "EditMessage", "Home",
+                                        new { @IdTheme = ViewData["IdTheme"], @InternalId = item.InternalId },
+                                         new
+                                         {
+                                             @class = "viewDialog glyphicon glyphicon-pencil btn btn-default btn-block",
+                                             data_dialog_title = "Edit message",
+                                             title = "Edit message"
+                                         })
+
+                                    @Html.ActionLink(" ", "DeleteMessage", "Home",
+                                        new { @IdTheme = ViewData["IdTheme"], @InternalId = item.InternalId },
+                                         new
+                                         {
+                                             @class = "viewDialog glyphicon glyphicon-remove btn btn-warning btn-block",
+                                             data_dialog_title = "Delete message",
+                                             title = "Delete message"
+                                         })
+                                }
+                                else if (User.IsInRole("admin") && item.StatusMessageId != 3 && item.StatusMessageId != 4)
+                                {
+                                    @Html.ActionLink(" ", "DeleteMessageAdmin", "Home",
+                                        new { @IdTheme = ViewData["IdTheme"], @InternalId = item.InternalId, @nickName = item.NickName },
+                                         new
+                                         {
+                                             @class = "viewDialog glyphicon glyphicon-remove btn btn-warning btn-block",
+                                             data_dialog_title = "Delete message",
+                                             title = "Delete message"
+                                         })
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    <div class="navbar-fixed-bottom">
+        @*CREATE MESSAGE*@
+        <div id="createMessage" class="body-content collapse">
+            @using (Ajax.BeginForm("CreateMessage", "Home", new AjaxOptions
+            {
+                UpdateTargetId = "messageContainer",
+                HttpMethod = FormMethod.Post.ToString(),
+                OnFailure = "alert('Message not sent')",
+                OnSuccess = "MessageOnSuccess"//,
+            }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    @Html.Hidden("IdTheme", ViewData["IdTheme"])
+                    @Html.Label("txtMessage", "Your message:", htmlAttributes: new { @class = "control-label" })
+                    @Html.TextArea("messageText", new
+               {
+                   @class = "form-control",
+                   @id = "txtMessage",
+                   @required = "required",
+                   @placeholder = "enter your message"
+               })
+                    @Html.ValidationMessage("messageText", new { @class = "text-danger" })
+                    @Html.Hidden("Page", (int)ViewBag.PageNumber)
+                </div>
+
+                <div class="col-md-offset-5 col-lg-5">
+                    <input type="submit" value="ОК"
+                           class="btn btn-primary" />
+                    <input type="button" onclick="Refresh()" data-toggle="collapse" data-target="#createMessage" value="Cancel"
+                           class="btn btn-default" />
+                </div>
+            }
+        </div>
+
+        <div class="body-content container-fluid" id="paginationCont">
+            <div class="row">
+                @if (ViewBag.TotalPages == ViewBag.PageNumber || ViewBag.TotalPages == 1)
+                {
+                    <div class="col-md-2">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <input type="button" id="butCreateMessage" onclick="location.href='@Url.Action("Login", "Account",
+new { returnUrl = "/Home/ReadMessages/" + ViewData["IdTheme"] + "/?page=" +ViewBag.PageNumber})'" value="Create message"
+                                   class="btn btn-primary" />
+                        }
+                        else
+                        {
+                            <input type="button" id="butCreateMessage" onclick="CreateMessage()" data-toggle="collapse" data-target="#createMessage" value="Create message"
+                                   class="btn btn-primary" />
+                        }
+                    </div>
+                }
+                <div class="col-md-2">
+                    <input type="button" onclick="location.href='@Url.Action("Index","Home")'" value="Home ->"
+                           class="btn btn-link" />
+                </div>
+
+                <div class="text-center">
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <div>
+                            @for (int i = 1; i <= (int)ViewBag.totalPages; i++)
+                            {
+                                if (i == ViewBag.PageNumber)
+                                {
+                                    <div class = "btn btn-primary" title="current page">
+                                        @i
+                                    </div>
+                                    continue;
+                                }
+                                @Ajax.ActionLink(i.ToString(), "ReadMessages", new { id = ViewData["IdTheme"], page = i },
+new AjaxOptions { UpdateTargetId = "messageContainer", OnBegin = "PageBegin", OnSuccess = "PageSuccess" },
+new { @class = "btn btn-default" })
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Ajax.ActionLink("MessageUpdate", "ReadMessages", new { id = ViewData["IdTheme"], page = ViewBag.PageNumber },
+    new AjaxOptions { UpdateTargetId = "messageContainer", OnSuccess = "MessageOnSuccess"/*, OnBegin = "MessageOnBegin"*/ },
+    new { @id = "MessageUpdate", @style = "visibility:hidden;" })
+
+@Scripts.Render("~/bundles/autosize")
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/jquery-ui")
+
+<script type="text/javascript">
+    autosize($("textarea"));
+
+    $('form').submit(function () {
+        $("#txtMessage").val($("#txtMessage").val().trim());
+    });
+
+    $(document).ready(function () {
+        $("#txtMessage").on("click", function () {
+            window.scroll(0, $("body").height());
+        });
+    });
+
+    $(document).ready(function () {
+        $.ajaxSetup({ cache: false });
+
+        $(".viewDialog").on("click", function (e) {
+            e.preventDefault();
+
+            CreateMessage();
+            $("html").css("overflow-y", "hidden");
+
+            $("<div></div>")
+                .addClass("dialog")
+                .appendTo("#messageContainer")
+                .dialog({
+                    title: $(this).attr("data-dialog-title"),
+                    close: function () { $(this).remove() },
+                    modal: true,
+                    closeOnEscape: false,
+                    beforeClose: function () { Refresh() }
+                })
+                .load(this.href);
+        });
+    });
+</script>

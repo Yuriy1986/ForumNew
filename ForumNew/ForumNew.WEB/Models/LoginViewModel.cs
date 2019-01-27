@@ -8,14 +8,14 @@ namespace ForumNew.WEB.Models
 {
     public class LoginViewModel
     {
-        [Required]
-        [Display(Name = "Адрес электронной почты")]
+        [Required(ErrorMessage = "Email is required.")]
+        [Display(Name = "Email")]
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Пароль")]
+        [Display(Name = "Password")]
         public string Password { get; set; }
     }
 }

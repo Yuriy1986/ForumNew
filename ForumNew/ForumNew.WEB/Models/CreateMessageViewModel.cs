@@ -12,6 +12,9 @@ namespace ForumNew.WEB.Models
         [Required]
         public int IdTheme { get; set; }
 
+        [Required(ErrorMessage = "Message text is required.")]
+        [DataType(DataType.MultilineText)]
+        [Display(Name = "Your message")]
         public string MessageText { get; set; }
 
         [ScaffoldColumn(false)]

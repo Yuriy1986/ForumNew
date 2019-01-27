@@ -41,7 +41,7 @@ namespace ForumNew.WEB.Controllers
         public ActionResult Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
-                message == ManageMessageId.ChangePasswordSuccess ? "Ваш пароль изменен."
+                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : "";
 
             return View();
@@ -88,5 +88,10 @@ namespace ForumNew.WEB.Controllers
             return View(model);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            UserService.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

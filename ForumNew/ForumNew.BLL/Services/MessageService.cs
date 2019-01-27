@@ -22,15 +22,16 @@ namespace ForumNew.BLL.Services
             return Mapper.Map<DTOMessageHeader>(Database.Messages.MessageHeader(id));
         }
 
-        public IEnumerable<DTOMessageViewModel> GetAllMessages(int id)
+        public IEnumerable<DTOMessageViewModel> GetAllMessages(int id, ref int pageNumber, int pageSize, out int totalPages)
         {
-            return Mapper.Map<IEnumerable<Message>, IEnumerable<DTOMessageViewModel>>(Database.Messages.GetAllMessages(id));
+            return Mapper.Map<IEnumerable<Message>, IEnumerable<DTOMessageViewModel>>
+                (Database.Messages.GetAllMessages(id, ref pageNumber, pageSize, out totalPages));
         }
 
-        public void CreateMessage(DTOCreateMessageViewModel dtoCreateMessageViewModel)
+        public bool CreateMessage(DTOCreateMessageViewModel dtoCreateMessageViewModel)
         {
             var message = Mapper.Map<Message>(dtoCreateMessageViewModel);
-            Database.Messages.CreateMessage(message);
+            return Database.Messages.CreateMessage(message);
         }
 
         public bool DeleteMessage(DTODeleteMessageViewModel dtoDeleteMessageViewModel)

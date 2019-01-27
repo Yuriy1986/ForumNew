@@ -22,31 +22,52 @@ namespace ForumNew.DAL.Repositories
             return db.Themes.Where(i => i.Id == id).Include(src => src.ApplicationUser).FirstOrDefault();
         }
 
-        public IEnumerable<Message> GetAllMessages(int id)
+        public IEnumerable<Message> GetAllMessages(int id, ref int pageNumber, int pageSize, out int totalPages)
         {
-            return db.Messages.Where(i => i.ThemeId == id).OrderBy(o=>o.InternalId)
+            var selection = db.Messages.Where(i => i.ThemeId == id).OrderBy(o => o.InternalId)
                 .Include(src => src.ApplicationUser)
-                .Include(src => src.StatusMessage);
+                .Include(src => src.StatusMessage)
+                .ToList();
+
+            totalPages = (int)Math.Ceiling((decimal)selection.Count() / pageSize);
+
+            if (totalPages < 1)
+                totalPages = 1;
+
+            if (pageNumber < 1)
+                pageNumber = 1;
+
+            if (pageNumber > totalPages)
+                pageNumber = totalPages;
+
+            return selection.Skip((pageNumber - 1) * pageSize).Take(pageSize);
         }
 
-        public void CreateMessage(Message message)
+        public bool CreateMessage(Message message)
         {
-            message.InternalId = db.Messages.Where(i => i.ThemeId == message.ThemeId).Count() + 1;
+            Theme themeCurrent = db.Themes.FirstOrDefault(x => x.Id == message.ThemeId);
+            if (themeCurrent == null)
+                return false;
+
+            message.InternalId = db.Messages.Where(i => i.ThemeId == themeCurrent.Id).Count() + 1;
             message.StatusMessageId = 1;
             db.Messages.Add(message);
             db.Entry(message).State = EntityState.Added;
             db.SaveChanges();
+            return true;
+
         }
 
         public bool DeleteMessage(Message message)
         {
-            Message mesCurrent = db.Messages.Where(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId).FirstOrDefault();
+            //Message mesCurrent = db.Messages.Where(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId).FirstOrDefault();
+            Message mesCurrent = db.Messages.FirstOrDefault(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId);
 
             if (mesCurrent == null || mesCurrent.StatusMessageId == 3 || mesCurrent.StatusMessageId == 4)
                 return false;
 
-             // DeleteMessageConfirm.
-            if (message.ApplicationUserId!=null && message.ApplicationUserId!=mesCurrent.ApplicationUserId)
+            // DeleteMessageConfirm.
+            if (message.ApplicationUserId != null && message.ApplicationUserId != mesCurrent.ApplicationUserId)
                 return false;
 
             if (message.ApplicationUserId == null)
@@ -63,7 +84,9 @@ namespace ForumNew.DAL.Repositories
 
         public string GetMessage(Message message)
         {
-            Message mesCurrent = db.Messages.Where(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId).FirstOrDefault();
+            // Message mesCurrent = db.Messages.Where(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId).FirstOrDefault();
+            Message mesCurrent = db.Messages.FirstOrDefault(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId);
+
             if (mesCurrent == null || mesCurrent.StatusMessageId == 3 || mesCurrent.StatusMessageId == 4)
                 return null;
             else
@@ -72,14 +95,15 @@ namespace ForumNew.DAL.Repositories
 
         public string EditMessageConfirm(Message message)
         {
-            Message mesCurrent = db.Messages.Where(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId).FirstOrDefault();
+            //Message mesCurrent = db.Messages.Where(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId).FirstOrDefault();
+            Message mesCurrent = db.Messages.FirstOrDefault(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId);
 
-            if (mesCurrent == null || mesCurrent.StatusMessageId == 3 || mesCurrent.StatusMessageId == 4 || mesCurrent.ApplicationUserId!=message.ApplicationUserId)
-                return "Ошибка (Нажмите кнопку \"Отмена\" для перезагрузки страницы)";
+            if (mesCurrent == null || mesCurrent.StatusMessageId == 3 || mesCurrent.StatusMessageId == 4 || mesCurrent.ApplicationUserId != message.ApplicationUserId)
+                return "Error (Click button \"Cancel\" to reload the page.)";
 
-            if (message.MessageText== mesCurrent.MessageText)
-                return "Редактируемое сообщение совпадает с исходным";
-            
+            if (message.MessageText == mesCurrent.MessageText)
+                return "Editable message is the same as the original.";
+
             else
             {
                 mesCurrent.StatusMessageId = 2;

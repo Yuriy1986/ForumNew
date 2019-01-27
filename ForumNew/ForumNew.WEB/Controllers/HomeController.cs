@@ -9,7 +9,6 @@ using ForumNew.BLL.Interfaces;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
 using System;
-//using PagedList;
 using System.Text.RegularExpressions;
 
 namespace ForumNew.WEB.Controllers
@@ -17,44 +16,13 @@ namespace ForumNew.WEB.Controllers
     public class HomeController : Controller
     {
         IUserService UserService;
-        private IThemeService ThemeService;
-        public HomeController(IUserService service, IThemeService service1)
+        IThemeService ThemeService;
+        IMessageService MessageService;
+        public HomeController(IUserService userService, IThemeService themeService, IMessageService messageService)
         {
-            UserService = service;
-            ThemeService = service1;
-        }
-
-
-        //private IThemeService ThemeService
-        //{
-        //    get
-        //    {
-        //        return HttpContext.GetOwinContext().GetUserManager<IThemeService>();
-        //    }
-        //}
-
-        //private IUserService UserService
-        //{
-        //    get
-        //    {
-        //        return HttpContext.GetOwinContext().GetUserManager<IUserService>();
-        //    }
-        //}
-
-        //private IThemeService ThemeService
-        //{
-        //    get
-        //    {
-        //        return HttpContext.GetOwinContext().GetUserManager<IThemeService>();
-        //    }
-        //}
-
-        private IMessageService MessageService
-        {
-            get
-            {
-                return HttpContext.GetOwinContext().GetUserManager<IMessageService>();
-            }
+            UserService = userService;
+            ThemeService = themeService;
+            MessageService = messageService;
         }
 
         public async Task<ActionResult> Index()
@@ -82,13 +50,13 @@ namespace ForumNew.WEB.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Простой форум";
+            ViewBag.Message = "Simple forum ASP.NET MVC5";
             return View();
         }
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Связаться с Админом";
+            ViewBag.Message = "Contact admin";
             return View();
         }
 
@@ -106,7 +74,9 @@ namespace ForumNew.WEB.Controllers
         {
             if (ModelState.IsValid)
             {
-                model.ThemeText.Trim();
+                Regex regex = new Regex(@"\r\n");
+                model.ThemeText = regex.Replace(model.ThemeText, "");
+                model.ThemeText= model.ThemeText.Trim();
                 model.UserId = User.Identity.GetUserId();
 
                 var createThemeDto = Mapper.Map<DTOCreateThemeViewModel>(model);
@@ -119,30 +89,36 @@ namespace ForumNew.WEB.Controllers
 
         // id - IdTheme.
         [HttpGet]
-        //public async Task<ActionResult> ReadMessages(int id, int? page)
-        //{
-        //    int pageNumber = (page ?? 1);
-        //    // Messages on page.
-        //    int pageSize = 20;
+        public async Task<ActionResult> ReadMessages(int id, int? page)
+        {
+            int pageNumber = (page ?? 1);
+            // Messages on page.
+            int pageSize = 20;
 
-        //    var messageList = Mapper.Map<IEnumerable<DTOMessageViewModel>, IEnumerable<MessageViewModel>>(MessageService.GetAllMessages(id));
-        //    ViewData.Add("IdTheme", id);
+            var messageList = Mapper.Map<IEnumerable<DTOMessageViewModel>, IEnumerable<MessageViewModel>>
+                (MessageService.GetAllMessages(id, ref pageNumber, pageSize, out int totalPages));
+            ViewData.Add("IdTheme", id);
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.TotalPages = totalPages;
 
-        //    if (!Request.IsAjaxRequest())
-        //    {
-        //        var messageHeader = MessageService.MessageHeader(id);
-        //        ViewData.Add("NickCreatorTheme", messageHeader.NickName);
-        //        ViewData.Add("ThemeText", messageHeader.ThemeText);
-        //        ViewData.Add("ThemeTime", messageHeader.ThemeTime);
-        //        return View("ReadMessages", messageList.ToPagedList(pageNumber, pageSize));
-        //    }
-        //    else
-        //    {
-        //        if (Request.IsAuthenticated)
-        //            await UpdateUsers();
-        //        return PartialView("_MessagePartial", messageList.ToPagedList(pageNumber, pageSize));
-        //    }
-        //}
+            if (!Request.IsAjaxRequest())
+            {
+                var messageHeader = MessageService.MessageHeader(id);
+                if(messageHeader==null)
+                    return RedirectToAction("Index");
+
+                ViewData.Add("NickCreatorTheme", messageHeader.NickName);
+                ViewData.Add("ThemeText", messageHeader.ThemeText);
+                ViewData.Add("ThemeTime", messageHeader.ThemeTime);
+                return View("ReadMessages", messageList);
+            }
+            else
+            {
+                if (Request.IsAuthenticated)
+                    await UpdateUsers();
+                return PartialView("_MessagePartial", messageList);
+            }
+        }
 
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -154,7 +130,8 @@ namespace ForumNew.WEB.Controllers
                 model.MessageText = RegularMessage(model.MessageText);
                 model.UserId = User.Identity.GetUserId();
                 var createMessageDto = Mapper.Map<DTOCreateMessageViewModel>(model);
-                MessageService.CreateMessage(createMessageDto);
+                if(!MessageService.CreateMessage(createMessageDto))
+                    return HttpNotFound();
 
                 return RedirectToAction("ReadMessages", new { id = model.IdTheme, page = model.Page });
             }
@@ -167,7 +144,7 @@ namespace ForumNew.WEB.Controllers
         {
             if (ModelState.IsValid)
             {
-                ViewBag.answer = "Вы действительно хотите удалить сообщение: #" + model.InternalId + " пользователя " + nickName;
+                ViewBag.answer = "Are you sure you want to delete message: #" + model.InternalId + " user`s " + nickName;
                 return PartialView("_DeleteMessageAdminPartial", model);
             }
             return HttpNotFound();
@@ -192,7 +169,7 @@ namespace ForumNew.WEB.Controllers
         {
             if (ModelState.IsValid)
             {
-                ViewBag.answer = "Вы действительно хотите удалить сообщение: #" + model.InternalId;
+                ViewBag.answer = "Are you sure you want to delete message: #" + model.InternalId;
                 return PartialView("_DeleteMessagePartial", model);
             }
             return HttpNotFound();
@@ -235,14 +212,14 @@ namespace ForumNew.WEB.Controllers
             if (ModelState.IsValid)
             {
                 if (model.MessageText == null)
-                    return "Необходимо указать текст сообщения";
+                    return "Message text is required.";
                 model.UserId = User.Identity.GetUserId();
                 model.MessageText = RegularMessage(model.MessageText);
 
                 var editMessageDto = Mapper.Map<DTOEditMessageViewModel>(model);
                 return MessageService.EditMessageConfirm(editMessageDto);
             }
-            return "Ошибка (Нажмите кнопку \"Отмена\" для перезагрузки страницы)";
+            return "Error (Click \"Cancel\" to reload page)";
         }
 
         [Authorize(Roles = "admin")]
@@ -261,6 +238,14 @@ namespace ForumNew.WEB.Controllers
             regex = new Regex(@"^(\s)*", RegexOptions.Multiline);
             messageText = regex.Replace(messageText, "");
             return messageText;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            UserService.Dispose();
+            ThemeService.Dispose();
+            MessageService.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

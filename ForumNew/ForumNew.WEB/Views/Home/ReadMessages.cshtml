@@ -1,0 +1,108 @@
+﻿@{
+    ViewBag.Title = "Messages";
+}
+@{
+    DateTime time = (DateTime)@ViewData["ThemeTime"];
+}
+@Styles.Render("~/Content/jquicss")
+
+<style>
+    textarea {
+        resize: none;
+        max-width: none;
+    }
+
+    body {
+        padding-top: 10px;
+    }
+</style>
+@section Header {
+    <div class="body-content">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-1">@ViewData["NickCreatorTheme"]</td>
+                    <td class="col-md-10"><textarea id="themetext" readonly>@ViewData["ThemeText"]</textarea></td>
+                    <td class="col-md-1">
+                        @time.ToShortDateString()
+                        <br />@time.ToShortTimeString()
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+@*DELETE THEME (Admin)*@
+@if (User.IsInRole("admin"))
+{
+    using (Html.BeginForm("DeleteTheme", "Home", FormMethod.Post, new { @id = "formDeleteTheme" }))
+    {
+        @Html.AntiForgeryToken();
+        <div class="form-group">
+            @Html.Hidden("id", @ViewData["IdTheme"])
+        </div>
+
+        <div class="text-center">
+            <input type="button" onclick="DeleteTheme(@ViewData["IdTheme"])" value="Delete theme" class="btn btn-danger" />
+        </div>
+    }
+    <hr />
+}
+<div>
+    @Html.Partial("_MessagePartial")
+</div>
+
+
+@Scripts.Render("~/bundles/unobtrusive-ajax")
+
+@section scripts
+{
+
+    <script type="text/javascript">
+        var timerUpdate;
+        var timerUserUpdate;
+
+        function PageBegin() {
+            clearInterval(timerUpdate);
+        }
+
+        function PageSuccess() {
+            window.scroll(0, 0);
+            MessageOnSuccess();
+        }
+
+        function CreateMessage() {
+            timerUserUpdate = setInterval('$.post("/Home/UpdateUsers")', 45000);
+            clearInterval(timerUpdate);
+            $(".modalField").show();
+            $("#paginationCont").hide();
+        };
+
+
+        $(document).ready(function () {
+            // Ajax.ActionLink.
+            $("#MessageUpdate").click();
+        });
+
+        function MessageOnSuccess(result) {
+            if (timerUserUpdate) {
+                clearInterval(timerUserUpdate);
+                $("html").css("overflow-y", "scroll");
+            }
+
+            // Update field every 15 s.
+            timerUpdate = setTimeout("Refresh();", 15000);
+        };
+
+        function Refresh() {
+            clearInterval(timerUpdate);
+            $("#MessageUpdate").click();
+        };
+
+        function DeleteTheme(id) {
+            var answer = confirm("Are you sure you want to delete theme (id= " + id + ")");
+            if (answer)
+                $("#formDeleteTheme").submit();
+        };
+    </script>
+}

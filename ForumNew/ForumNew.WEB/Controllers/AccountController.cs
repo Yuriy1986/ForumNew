@@ -52,7 +52,7 @@ namespace ForumNew.WEB.Controllers
                 ClaimsIdentity claim = await UserService.Login(loginDto);
                 if (claim == null)
                 {
-                    ModelState.AddModelError("", "Неверный логин или пароль.");
+                    ModelState.AddModelError("", "Invalid login or password.");
                 }
                 else
                 {
@@ -60,6 +60,9 @@ namespace ForumNew.WEB.Controllers
                     {
                         IsPersistent = true
                     }, claim);
+
+                    if (returnUrl != null)
+                        return Redirect(returnUrl);
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -100,8 +103,8 @@ namespace ForumNew.WEB.Controllers
                     string code = operationDetails.Property;
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId, code }, protocol: Request.Url.Scheme);
 
-                    await UserService.SendEmailAsync(userId, "Подтверждение электронной почты",
-"Для завершения регистрации перейдите по ссылке:: <a href=\"" + callbackUrl + "\">завершить регистрацию</a>");
+                    await UserService.SendEmailAsync(userId, "Confirm your account", 
+                        "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
                     return View("DisplayEmail");
                 }
@@ -150,7 +153,7 @@ namespace ForumNew.WEB.Controllers
                     string code = operationDetails.Property;
 
                     var callbackUrl = Url.Action("ResetPassword", "Account", new { userId, code}, protocol: Request.Url.Scheme);
-                    await UserService.SendEmailAsync(userId, "Сброс пароля", "Сбросьте ваш пароль, щелкнув <a href=\"" + callbackUrl + "\">здесь</a>");
+                    await UserService.SendEmailAsync(userId, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
                     return RedirectToAction("ForgotPasswordConfirmation", "Account");
                 }
                 else
@@ -218,6 +221,12 @@ namespace ForumNew.WEB.Controllers
         public string GetUserNickName(IIdentity identity)
         {
             return UserService.GetUserNickName(identity);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            UserService.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

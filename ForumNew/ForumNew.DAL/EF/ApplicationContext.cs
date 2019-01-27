@@ -24,10 +24,10 @@ namespace ForumNew.DAL.EF
     {
         protected override void Seed(ApplicationDbContext db)
         {
-            db.StatusMessages.Add(new StatusMessage { StatusMessageText = "Создал сообщение" });
-            db.StatusMessages.Add(new StatusMessage { StatusMessageText = "Отредактировал сообщение" });
-            db.StatusMessages.Add(new StatusMessage { StatusMessageText = "Удалил сообщение" });
-            db.StatusMessages.Add(new StatusMessage { StatusMessageText = "Сообщение удалено админом" });
+            db.StatusMessages.Add(new StatusMessage { StatusMessageText = "Message is created" });
+            db.StatusMessages.Add(new StatusMessage { StatusMessageText = "Message is edited" });
+            db.StatusMessages.Add(new StatusMessage { StatusMessageText = "Message is deleted" });
+            db.StatusMessages.Add(new StatusMessage { StatusMessageText = "Message is deleted by admin" });
 
             var role1 = new IdentityRole { Name = "admin" };
             var role2 = new IdentityRole { Name = "user" };

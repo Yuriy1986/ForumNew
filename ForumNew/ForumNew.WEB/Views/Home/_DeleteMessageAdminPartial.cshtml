@@ -1,0 +1,34 @@
+﻿@model ForumNew.WEB.Models.DeleteMessageViewModel
+@ViewBag.answer
+<hr />
+<p>
+    @Html.ValidationMessage("Message", new { @class = "text-danger", @id = "validation" })
+</p>
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "AntiForgeryForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+<div class="text-center">
+    <button type="button" class="btn btn-warning" onclick="Submit(@Model.IdTheme, @Model.InternalId)">OK</button>
+    <button type="button" class="btn btn-basic" onclick="$('.dialog').dialog('close');">Cancel</button>
+</div>
+
+<script type="text/javascript">
+    function Submit(IdTheme, InternalId) {
+        var form = $('#AntiForgeryForm');
+        var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+        $.post("/Home/DeleteMessageAdmin",
+            {
+                __RequestVerificationToken: token,
+                IdTheme: IdTheme,
+                InternalId: InternalId
+            },
+            function (response) {
+                if (response === "True")
+                    $('.dialog').dialog('close');
+                else
+                    $("#validation").text("Message not found. Press the button \"Cancel\"");
+            });
+    }
+</script>

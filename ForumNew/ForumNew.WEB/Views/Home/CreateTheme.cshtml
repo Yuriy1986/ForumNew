@@ -1,0 +1,63 @@
+﻿@model ForumNew.WEB.Models.CreateThemeViewModel
+@{
+    ViewBag.Title = "Create theme";
+}
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("themearea", "Theme name", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ThemeText, new
+           {
+               htmlAttributes = new
+               {
+                   @id= "themearea",
+                   @class = "form-control",
+                   @placeholder = "enter theme name"
+               }
+           })
+                @Html.ValidationMessageFor(model => model.ThemeText, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input id="btnCreateText" type="submit" value="Create theme" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+<div>
+    @Html.ActionLink("Home ->", "Index")
+</div>
+
+@section Header {}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/autosize")
+
+    <script type="text/javascript">
+        autosize($("textarea"));
+
+        $('form').submit(function () {
+            $("#themearea").val($("#themearea").val().trim());
+        });
+
+        $("textarea").keydown(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                $("#btnCreateText").click();
+            }
+        });
+
+        setInterval('$.post("/Home/UpdateUsers")', 45000);
+    </script>
+}

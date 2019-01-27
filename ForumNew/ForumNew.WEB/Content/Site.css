@@ -1,12 +1,26 @@
 ﻿body {
     padding-top: 50px;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
+    /*padding-left: 15px;
+    padding-right: 15px;*/
+    /*padding-top: 10px;
+    padding-bottom: 10px;*/
     padding-left: 15px;
     padding-right: 15px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.navbar-toggle {
+    background-color: burlywood;
+}
+
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+    background-color: coral;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -21,4 +35,67 @@ input,
 select,
 textarea {
     max-width: 280px;
+}
+
+
+.table-hover > tbody > tr:hover > td,
+.table-hover > tbody > tr:hover > th {
+    background-color: chartreuse;
+    font-style: italic;
+}
+
+#themetext {
+    max-width: none;
+    width: 100%;
+    resize: none;
+    border: none;
+    background-color: unset;
+    font: unset;
+}
+
+#themearea {
+    resize: none;
+    max-width: none;
+}
+
+.table-bordered {
+    background-color: wheat;
+    border: 3px solid green;
+}
+
+    .table-bordered > thead > tr > th,
+    .table-bordered > tbody > tr > th,
+    .table-bordered > tfoot > tr > th,
+    .table-bordered > thead > tr > td,
+    .table-bordered > tbody > tr > td,
+    .table-bordered > tfoot > tr > td {
+        border: 2px solid green;
+    }
+
+.navbar-fixed-bottom {
+    position: relative;
+    right: 0;
+    left: 0;
+    bottom: auto;
+    border-width: 0 0 1px;
+    z-index: 1;
+}
+
+.panel-body {
+    padding: 0;
+    margin: 0;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.modalField {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    display: none;
 }

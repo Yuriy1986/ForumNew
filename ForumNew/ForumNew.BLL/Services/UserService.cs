@@ -23,7 +23,6 @@ namespace ForumNew.BLL.Services
             Database = uow;
             var provider = new DpapiDataProtectionProvider("ASP.NET Identity");
             Database.UserManager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser>(provider.Create("EmailConfirmation"));
-            Database.UserManager.EmailService = new EmailService();
         }
 
         public async Task<OperationDetails> Register(DTORegisterViewModel dtoRegisterViewModel)
@@ -33,7 +32,7 @@ namespace ForumNew.BLL.Services
             {
                 // Check NickName for unique.
                 if (Database.UserManager.Users.FirstOrDefault(x => x.NickName == dtoRegisterViewModel.NickName) != null)
-                    return new OperationDetails(false, "Пользователь с таким Ником уже существует", "NickName");
+                    return new OperationDetails(false, "User with the same NickName already exists.", "NickName");
 
                 user = new ApplicationUser { UserName = dtoRegisterViewModel.Email, Email = dtoRegisterViewModel.Email, NickName = dtoRegisterViewModel.NickName, Online = true, TimeLogin = DateTime.Now };
 
@@ -53,7 +52,7 @@ namespace ForumNew.BLL.Services
             }
             else
             {
-                return new OperationDetails(false, "Пользователь с таким логином (Email) уже существует", "Email");
+                return new OperationDetails(false, "User with the same Login (Email) already exists.", "Email");
             }
         }
 
@@ -64,6 +63,8 @@ namespace ForumNew.BLL.Services
 
         public async Task SendEmailAsync(string userId, string subject, string body)
         {
+            Database.UserManager.EmailService = new EmailService();
+            
             await Database.UserManager.SendEmailAsync(userId, subject, body);
         }
 

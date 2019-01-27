@@ -13,13 +13,13 @@ namespace ForumNew.WEB.Models
         [HiddenInput]
         public int Id { get; set; }
 
-        [Display(Name = "Ник")]
+        [Display(Name = "NickName")]
         public string NickName { get; set; }
 
-        [Display(Name = "Тема")]
+        [Display(Name = "Theme")]
         public string ThemeText { get; set; }
 
-        [Display(Name = "Дата создания")]
+        [Display(Name = "Date of creation")]
         public DateTime ThemeTime { get; set; }
     }
 }

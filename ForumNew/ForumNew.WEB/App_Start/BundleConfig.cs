@@ -31,9 +31,9 @@ namespace ForumNew.WEB
             "~/Scripts/autosize.js"
             ));
 
-            //bundles.Add(new ScriptBundle("~/bundles/unobtrusive-ajax").Include(
-            //"~/Scripts/jquery.unobtrusive-ajax.min.js"
-            //));
+            bundles.Add(new ScriptBundle("~/bundles/unobtrusive-ajax").Include(
+            "~/Scripts/jquery.unobtrusive-ajax.min.js"
+            ));
 
             // Dialog.
             bundles.Add(new ScriptBundle("~/bundles/jquery-ui").Include(
@@ -42,10 +42,6 @@ namespace ForumNew.WEB
             bundles.Add(new StyleBundle("~/Content/jquicss").Include(
           "~/Content/jquery-ui.css",
           "~/Content/jquery-ui.theme.css"));
-
-            //// PagedList.
-            //bundles.Add(new StyleBundle("~/Content/PagedList").Include(
-            //"~/Content/PagedList.css"));
         }
     }
 }

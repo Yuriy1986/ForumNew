@@ -61,7 +61,8 @@ namespace ForumNew.DAL.Repositories
 
         public async Task LogOff(string userId)
         {
-            ApplicationUser user = db.Users.Where(i => i.Id == userId).FirstOrDefault();
+            //ApplicationUser user = db.Users.Where(i => i.Id == userId).FirstOrDefault();
+            ApplicationUser user = db.Users.FirstOrDefault(i => i.Id == userId);
             user.Online = false;
             user.TimeLogin = DateTime.Now;
             db.Entry(user).State = EntityState.Modified;
@@ -81,7 +82,8 @@ namespace ForumNew.DAL.Repositories
             // User is in the database.
             if (userCurrentId != null)
             {
-                ApplicationUser user = db.Users.Where(i => i.Id == userCurrentId).FirstOrDefault();
+                //ApplicationUser user = db.Users.Where(i => i.Id == userCurrentId).FirstOrDefault();
+                ApplicationUser user = db.Users.FirstOrDefault(i => i.Id == userCurrentId);
                 user.Online = true;
                 user.TimeLogin = DateTime.Now;
             }

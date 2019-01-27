@@ -8,27 +8,27 @@ namespace ForumNew.WEB.Models
 {
     public class RegisterViewModel
     {
-        [Required]
-        [Display(Name = "Ник*")]
-        [MaxLength(25, ErrorMessage = "Ник должен быть не более 25 символов")]
-        [MinLength(3, ErrorMessage = "Ник должен быть не менее 3 символов")]
+        [Required(ErrorMessage = "NickName is required.")]
+        [Display(Name = "NickName*")]
+        [MaxLength(25, ErrorMessage = "The NickName must be no more 25 characters long.")]
+        [MinLength(3, ErrorMessage = "The NickName must be at least 3 characters long.")]
         public string NickName { get; set; }    
 
-        [Required]
+        [Required(ErrorMessage = "Email is required.")]
         [EmailAddress]
-        [Display(Name = "Адрес электронной почты*")]
+        [Display(Name = "Email*")]
         public string Email { get; set; }
 
-        [Required]
-        [MinLength(6, ErrorMessage = "Пароль должен быть не менее 6 символов")]
+        [Required(ErrorMessage = "Password is required.")]
+        [MinLength(6, ErrorMessage = "The password must be at least 6 characters long.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Пароль*")]
-        [MaxLength(60, ErrorMessage = "Пароль должен быть не более 60 символов")]
+        [Display(Name = "Password*")]
+        [MaxLength(60, ErrorMessage = "The password must be no more 60 characters long.")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Подтверждение пароля*")]
-        [Compare("Password", ErrorMessage = "Пароль и его подтверждение не совпадают.")]
+        [Display(Name = "Confirm password*")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
 }
