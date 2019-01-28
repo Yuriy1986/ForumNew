@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNet.Identity;
-using System;
 
 namespace ForumNew.BLL.Infrastructure
 {

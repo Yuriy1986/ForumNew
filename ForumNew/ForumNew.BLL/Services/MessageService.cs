@@ -1,7 +1,6 @@
 ﻿using ForumNew.BLL.DTO;
 using ForumNew.DAL.Entities;
 using ForumNew.BLL.Interfaces;
-using ForumNew.BLL.Infrastructure;
 using ForumNew.DAL.Interfaces;
 using System.Collections.Generic;
 using AutoMapper;

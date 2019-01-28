@@ -31,7 +31,6 @@ namespace ForumNew.DAL.Repositories
 
         public void DeleteTheme(int id)
         {
-            //Theme themeCurrent = db.Themes.Where(x => x.Id ==id).FirstOrDefault();
             Theme themeCurrent = db.Themes.FirstOrDefault(x => x.Id == id);
             if (themeCurrent!=null)
             {

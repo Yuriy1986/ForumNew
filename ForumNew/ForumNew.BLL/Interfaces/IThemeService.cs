@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ForumNew.BLL.DTO;
-using ForumNew.BLL.Infrastructure;
-
 
 namespace ForumNew.BLL.Interfaces
 {

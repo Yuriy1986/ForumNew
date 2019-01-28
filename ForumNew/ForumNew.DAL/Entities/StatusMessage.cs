@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ForumNew.DAL.Entities
 {
@@ -16,5 +13,12 @@ namespace ForumNew.DAL.Entities
         public int Id { get; set; }
 
         public string StatusMessageText { get; set; }
+
+        public ICollection<Message> Messages { get; set; }
+
+        public StatusMessage()
+        {
+            Messages = new List<Message>();
+        }
     }
 }

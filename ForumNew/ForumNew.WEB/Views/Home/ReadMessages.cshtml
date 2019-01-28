@@ -57,7 +57,6 @@
 
 @section scripts
 {
-
     <script type="text/javascript">
         var timerUpdate;
         var timerUserUpdate;
@@ -74,7 +73,6 @@
         function CreateMessage() {
             timerUserUpdate = setInterval('$.post("/Home/UpdateUsers")', 45000);
             clearInterval(timerUpdate);
-            $(".modalField").show();
             $("#paginationCont").hide();
         };
 

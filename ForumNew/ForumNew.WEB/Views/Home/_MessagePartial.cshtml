@@ -92,7 +92,8 @@
                 UpdateTargetId = "messageContainer",
                 HttpMethod = FormMethod.Post.ToString(),
                 OnFailure = "alert('Message not sent')",
-                OnSuccess = "MessageOnSuccess"//,
+                OnSuccess = "MessageOnSuccess",
+                OnBegin= "$('#createMessage').hide()"
             }))
             {
                 @Html.AntiForgeryToken()

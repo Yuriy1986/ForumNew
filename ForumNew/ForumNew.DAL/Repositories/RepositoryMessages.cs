@@ -60,7 +60,6 @@ namespace ForumNew.DAL.Repositories
 
         public bool DeleteMessage(Message message)
         {
-            //Message mesCurrent = db.Messages.Where(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId).FirstOrDefault();
             Message mesCurrent = db.Messages.FirstOrDefault(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId);
 
             if (mesCurrent == null || mesCurrent.StatusMessageId == 3 || mesCurrent.StatusMessageId == 4)
@@ -84,7 +83,6 @@ namespace ForumNew.DAL.Repositories
 
         public string GetMessage(Message message)
         {
-            // Message mesCurrent = db.Messages.Where(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId).FirstOrDefault();
             Message mesCurrent = db.Messages.FirstOrDefault(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId);
 
             if (mesCurrent == null || mesCurrent.StatusMessageId == 3 || mesCurrent.StatusMessageId == 4)
@@ -95,7 +93,6 @@ namespace ForumNew.DAL.Repositories
 
         public string EditMessageConfirm(Message message)
         {
-            //Message mesCurrent = db.Messages.Where(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId).FirstOrDefault();
             Message mesCurrent = db.Messages.FirstOrDefault(x => x.InternalId == message.InternalId && x.ThemeId == message.ThemeId);
 
             if (mesCurrent == null || mesCurrent.StatusMessageId == 3 || mesCurrent.StatusMessageId == 4 || mesCurrent.ApplicationUserId != message.ApplicationUserId)
