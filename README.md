@@ -1,14 +1,14 @@
-
+ 
 # ForumNew
   Tools and technologies:
-•	MS Visual Studio 2017; 
-•	MS SQL Server (in MS Visual Studio);
-•	MVC 5 with Razor;
-•	Entity Framework;
-•	AutoMapper;
-•	Autofac;
-•	Jquery/JqueryUI/Bootstrap;
-•	HTML/CSS/JS.
+ •	MS Visual Studio 2017; 
+ •	MS SQL Server (in MS Visual Studio);
+ •	MVC 5 with Razor;
+ •	Entity Framework;
+ •	AutoMapper;
+ •	Autofac;
+ •	Jquery/JqueryUI/Bootstrap;
+ •	HTML/CSS/JS.
 
   Main features:
 •	registration of a new user with confirmation via email, change and forgot passwords;
